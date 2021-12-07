@@ -1,12 +1,12 @@
+#include<iostream>
+using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
+
 void main()
 {
-	int a = 0;
-	std::thread hello_thread(thr1, ref(a));
-	std::thread world_thread(thr2);
+	setlocale(LC_ALL, "rus");
 
-	cin.get();
-	finish = true;
 
-	world_thread.join();
-	hello_thread.join();
 }
