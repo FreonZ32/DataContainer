@@ -95,8 +95,6 @@ public:
 		}
 	}
 
-
-
 	//METHODS
 	void print()const
 	{
@@ -116,11 +114,10 @@ void main()
 	cout << "Введите размер списка: "; cin >> n;
 	ForwardList list;
 	for (int i = 0; i < n; i++)
-	{
-		list.push_front(rand() % 100);
-	}
+	{list.push_front(rand() % 100);}
+
 	list.print();
-	/*cout << endl;
+	cout << endl;
 	list.push_back(8);
 	list.print();
 	cout << endl;
@@ -132,7 +129,7 @@ void main()
 	cout << endl;
 	cout << "Какой элемент (начиная с 0) вставить?: "; cin >> n;
 	list.insert(100, n);
-	list.print();*/
+	list.print();
 	cout << "Какой элемент (начиная с 0) удалить?: "; cin >> n;
 	list.erase(n);
 	list.print();
