@@ -29,6 +29,10 @@ public:
 		this->Head = nullptr;	//Если голова указывает на 0 = список пуст
 	cout << "Lconstructor:\t" << this << endl;
 	}
+	ForwardList(Element* pNext)
+	{
+		this->Head = pNext;
+	}
 	~ForwardList()
 	{cout << "EDestructor:\t" << this << endl;}
 
@@ -42,26 +46,56 @@ public:
 	void push_back(int Data)
 	{
 		Element* New = new Element(Data);
-		Element* Temp = Head;
-		while (true)
-		{
-			if (Temp->pNext == nullptr)break;
-			else Temp = Temp->pNext;
-		}
+		Element* Temp = Head; 
+		for (; Temp->pNext != nullptr; Temp = Temp->pNext);
 		Temp->pNext = New;
 	}
-	void push_in_temp(int Data, int n)
+	void pop_front()
 	{
-		Element* New = new Element(Data);
 		Element* Temp = Head;
-		while (n==1)
-		{
-			if (Temp->pNext == nullptr)break;
-			Temp = Temp->pNext;
-			n--;
-		}
-		Temp->Data = New->Data;
+		Head->~Element();
+		Temp = Temp->pNext;
+		Head = Temp;
 	}
+	void pop_back()
+	{
+		Element* Temp = Head;
+		for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext);
+		Temp->pNext->~Element();
+		Temp->pNext = nullptr;
+	}
+	void insert(int Data, unsigned int n)
+	{
+		Element* Temp = Head;
+		Element* New = new Element(Data);
+		int i = 0;
+		for (; Temp->pNext != nullptr; Temp = Temp->pNext, i++);
+		if (n > i&&i!=0) { cout << "Место вставки выходит за пределы массива! " << endl; }
+		else
+		{
+			Temp = Head;
+			if (n == 0)push_front(Data);
+			else if (n == i) { for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext); New->pNext = Temp->pNext;Temp->pNext = New;}
+			else {for (; n; Temp = Temp->pNext, n--); New->pNext = Temp->pNext; Temp->pNext = New;}
+		}
+	}
+	void erase(unsigned int n)
+	{
+		Element* Temp = Head;
+		int i = 0;
+		for (; Temp->pNext != nullptr; Temp = Temp->pNext, i++);
+		if (i == 0) { cout << "Массив и так из 1ого элемента!" << endl; }
+		else if (n > i) { cout << "Место удаления выходит за пределы массива! " << endl; }
+		else 
+		{
+			Temp = Head;
+			if (n == 0)pop_front();
+			else if (n == i)pop_back();
+			else { for (; n>1; Temp = Temp->pNext, n--); Element* New = Temp->pNext; Temp->pNext = Temp->pNext->pNext; New->~Element(); }
+		}
+	}
+
+
 
 	//METHODS
 	void print()const
@@ -86,8 +120,20 @@ void main()
 		list.push_front(rand() % 100);
 	}
 	list.print();
+	/*cout << endl;
 	list.push_back(8);
 	list.print();
-	list.push_in_temp(8, 2);
+	cout << endl;
+	list.pop_front();
+	list.print();
+	cout << endl;
+	list.pop_back();
+	list.print();
+	cout << endl;
+	cout << "Какой элемент (начиная с 0) вставить?: "; cin >> n;
+	list.insert(100, n);
+	list.print();*/
+	cout << "Какой элемент (начиная с 0) удалить?: "; cin >> n;
+	list.erase(n);
 	list.print();
 }
