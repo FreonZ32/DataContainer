@@ -8,6 +8,7 @@ class Element
 {
 	int Data;	//Значение элемента
 	Element* pNext;
+	static int count;	//Количество элементов
 public:
 	int get_Data()const
 	{return Data;}
@@ -22,14 +23,18 @@ public:
 	{this->pNext = pNext;}
 	Element(int Data, Element* pNext = nullptr) :Data(Data), pNext(pNext)
 	{
+		count++;
 		cout << "Econstructor:\t" << this << endl;
 	}
 	~Element()
 	{
+		count--;
 		cout << "EDestructor:\t" << this << endl;
 	}
 	friend class ForwardList;
 };
+
+int Element::count = 0;
 
 class ForwardList
 {
@@ -49,7 +54,15 @@ public:
 		{cout << "FCopyConstructor:\t" << this << endl; }
 	}
 	~ForwardList()
-	{cout << "FDestructor:\t" << this << endl;}
+	{
+		for (;Head->count; )
+		{
+			Element* Temp = Head;
+			Head = Head->pNext;
+			delete Temp;
+		}
+		cout << "FDestructor:\t" << this << endl;
+	}
 
 	//ADDING ELEMENTS
 	void push_front(int Data)
@@ -60,21 +73,19 @@ public:
 	}
 	void push_back(int Data)
 	{
-		Element* New = new Element(Data);
+		if (Head == nullptr)return push_front(Data);
 		Element* Temp = Head; 
 		for (; Temp->pNext != nullptr; Temp = Temp->pNext);
-		Temp->pNext = New;
+		Temp->pNext = new Element(Data);
 	}
 	void pop_front()
 	{
-		
 		Element* Temp = Head;
 		if (Temp->pNext == nullptr)cout << "Нельзя удалить единственный элемент массива!" << endl;
 		else 
 		{
-			Head->~Element();
-			Temp = Temp->pNext;
-			Head = Temp;
+			Head = Head->pNext;
+			delete Temp;
 		}
 	}
 	void pop_back()
@@ -84,13 +95,21 @@ public:
 		else
 		{
 			for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext);
-			Temp->pNext->~Element();
+			delete Temp->pNext;
 			Temp->pNext = nullptr;
 		}
 	}
 	void insert(int Data, unsigned int n)
 	{
+		if (n > Head->count) {cout << "Выход за пределы списка! " << endl; return;}
+		if (n == 0 || Head == nullptr)return push_front(Data);
 		Element* Temp = Head;
+		for (int i = 0; i < n - 1; i++)Temp = Temp->pNext;
+		Element* New = new Element(Data);
+		New->pNext = Temp->pNext;
+		Temp->pNext = New;
+
+		/*Element* Temp = Head;
 		Element* New = new Element(Data);
 		int i = 0;
 		for (; Temp->pNext != nullptr; Temp = Temp->pNext, i++);
@@ -101,7 +120,7 @@ public:
 			if (n == 0)push_front(Data);
 			else if (n == i) { for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext); New->pNext = Temp->pNext;Temp->pNext = New;}
 			else {for (; n>1; Temp = Temp->pNext, n--); New->pNext = Temp->pNext; Temp->pNext = New;}
-		}
+		}*/
 	}
 	void erase(unsigned int n)
 	{
@@ -115,7 +134,7 @@ public:
 			Temp = Head;
 			if (n == 0)pop_front();
 			else if (n == i)pop_back();
-			else { for (; n>1; Temp = Temp->pNext, n--); Element* New = Temp->pNext; Temp->pNext = Temp->pNext->pNext; New->~Element(); }
+			else { for (; n>1; Temp = Temp->pNext, n--); Element* New = Temp->pNext; Temp->pNext = Temp->pNext->pNext; delete New; }
 		}
 	}
 
@@ -135,12 +154,14 @@ public:
 	//METHODS
 	void print()const
 	{
+		//cout << "Head:\t" << Head << endl;
 		Element* Temp = Head;	//temp - итератор
 		while (Temp != nullptr)
 		{
 			cout << Temp << "\t" << Temp->Data << "\t" << Temp->pNext << endl;
 			Temp = Temp->pNext;	//Переход на следующий элемент
 		}
+		cout << "Колличество элементов списка: " << Head->count << endl;
 	}
 };
 
@@ -155,7 +176,8 @@ ForwardList operator+(const ForwardList& left, const ForwardList& right)
 	return buffer;
 }
 
-//#define WORK_WITH_ELEMENTS_CHECK
+#define WORK_WITH_ELEMENTS_CHECK
+//#define CONSTRUCTORSandOPERATORS
 
 void main()
 {
@@ -164,15 +186,12 @@ void main()
 	int n;
 	cout << "Введите размер списка: "; cin >> n;
 	ForwardList list;
-	for (int i = 0; i < n; i++)
-	{
-		list.push_front(rand() % 100);
-	}
+	for (int i = 0; i < n; i++)list.push_front(rand() % 100);
 	cout << "Print of data base: " << endl;
 	list.print();
 	cout << endl;
 	cout << "Puch element back: " << endl;
-	list.push_back(8);
+	list.push_back(123);
 	list.print();
 	cout << endl;
 	cout << "Delete first elemeont of db: " << endl;
@@ -191,6 +210,7 @@ void main()
 	list.print();
 #endif // WORK_WITH_ELEMENTS_CHECK
 
+#ifdef CONSTRUCTORSandOPERATORS
 	ForwardList list;
 	for (int i = 0; i < 5; i++)
 	{
@@ -211,4 +231,6 @@ void main()
 	ForwardList list3;
 	list3 = list + list;
 	list3.print();
+#endif // CONSTRUCTORSandOPERATORS
+
 }
