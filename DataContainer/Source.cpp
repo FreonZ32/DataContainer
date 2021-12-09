@@ -9,6 +9,17 @@ class Element
 	int Data;	//Значение элемента
 	Element* pNext;
 public:
+	int get_Data()const
+	{return Data;}
+
+	Element* get_pNext()const
+	{return pNext;}
+
+	void set_Data(int Data)
+	{this->Data = Data;}
+
+	void set_pNext(Element* pNext)
+	{this->pNext = pNext;}
 	Element(int Data, Element* pNext = nullptr) :Data(Data), pNext(pNext)
 	{
 		cout << "Econstructor:\t" << this << endl;
@@ -24,17 +35,21 @@ class ForwardList
 {
 	Element* Head;	//Указывает на начальный элемент списка
 public:
+	Element* get_Head()const
+	{return Head;}
 	ForwardList()
 	{
 		this->Head = nullptr;	//Если голова указывает на 0 = список пуст
-	cout << "Lconstructor:\t" << this << endl;
+	cout << "Fconstructor:\t" << this << endl;
 	}
-	ForwardList(Element* pNext)
+	ForwardList(const ForwardList& ForwardList)
 	{
-		this->Head = pNext;
+		this->Head = new Element(ForwardList.Head->Data);
+		for (Element* Temp = ForwardList.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
+		{cout << "FCopyConstructor:\t" << this << endl; }
 	}
 	~ForwardList()
-	{cout << "EDestructor:\t" << this << endl;}
+	{cout << "FDestructor:\t" << this << endl;}
 
 	//ADDING ELEMENTS
 	void push_front(int Data)
@@ -52,17 +67,26 @@ public:
 	}
 	void pop_front()
 	{
+		
 		Element* Temp = Head;
-		Head->~Element();
-		Temp = Temp->pNext;
-		Head = Temp;
+		if (Temp->pNext == nullptr)cout << "Нельзя удалить единственный элемент массива!" << endl;
+		else 
+		{
+			Head->~Element();
+			Temp = Temp->pNext;
+			Head = Temp;
+		}
 	}
 	void pop_back()
 	{
 		Element* Temp = Head;
-		for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext);
-		Temp->pNext->~Element();
-		Temp->pNext = nullptr;
+		if (Temp->pNext == nullptr)cout << "Нельзя удалить единственный элемент массива!" << endl;
+		else
+		{
+			for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext);
+			Temp->pNext->~Element();
+			Temp->pNext = nullptr;
+		}
 	}
 	void insert(int Data, unsigned int n)
 	{
@@ -76,7 +100,7 @@ public:
 			Temp = Head;
 			if (n == 0)push_front(Data);
 			else if (n == i) { for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext); New->pNext = Temp->pNext;Temp->pNext = New;}
-			else {for (; n; Temp = Temp->pNext, n--); New->pNext = Temp->pNext; Temp->pNext = New;}
+			else {for (; n>1; Temp = Temp->pNext, n--); New->pNext = Temp->pNext; Temp->pNext = New;}
 		}
 	}
 	void erase(unsigned int n)
@@ -95,6 +119,19 @@ public:
 		}
 	}
 
+	//OPERATORS
+	ForwardList& operator=(const ForwardList& other)
+	{
+		if (&this->Head == &other.Head)return* this;
+		else 
+		{
+			this->Head = new Element(other.Head->Data);
+			for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
+			{cout << "Foperator=:\t" << this << endl; }
+			return *this;
+		}
+	}
+
 	//METHODS
 	void print()const
 	{
@@ -107,30 +144,71 @@ public:
 	}
 };
 
+ForwardList operator+(const ForwardList& left, const ForwardList& right)
+{
+	ForwardList buffer(left);
+	Element* Temp = buffer.get_Head();
+	for (; Temp->get_pNext() != nullptr; Temp = Temp->get_pNext());
+	Element* Temp2 = right.get_Head();
+	for (; Temp2!= nullptr; Temp2 = Temp2->get_pNext(),Temp = Temp->get_pNext())
+	{Temp->set_pNext(new Element(Temp2->get_Data()));}
+	return buffer;
+}
+
+//#define WORK_WITH_ELEMENTS_CHECK
+
 void main()
 {
 	setlocale(LC_ALL, "rus");
+#ifdef WORK_WITH_ELEMENTS_CHECK
 	int n;
 	cout << "Введите размер списка: "; cin >> n;
 	ForwardList list;
 	for (int i = 0; i < n; i++)
-	{list.push_front(rand() % 100);}
-
+	{
+		list.push_front(rand() % 100);
+	}
+	cout << "Print of data base: " << endl;
 	list.print();
 	cout << endl;
+	cout << "Puch element back: " << endl;
 	list.push_back(8);
 	list.print();
 	cout << endl;
+	cout << "Delete first elemeont of db: " << endl;
 	list.pop_front();
 	list.print();
 	cout << endl;
+	cout << "Delete last element of db: " << endl;
 	list.pop_back();
 	list.print();
 	cout << endl;
-	cout << "Какой элемент (начиная с 0) вставить?: "; cin >> n;
+	cout << "Enter insertion point(from 0 position)?: "; cin >> n;
 	list.insert(100, n);
 	list.print();
-	cout << "Какой элемент (начиная с 0) удалить?: "; cin >> n;
+	cout << "Enter the deletion point(from 0 position)?: "; cin >> n;
 	list.erase(n);
 	list.print();
+#endif // WORK_WITH_ELEMENTS_CHECK
+
+	ForwardList list;
+	for (int i = 0; i < 5; i++)
+	{
+		list.push_front(rand() % 100);
+	}
+	list.print();
+
+	cout << endl;
+	ForwardList list1(list);
+	list1.print();
+
+	cout << endl;
+	ForwardList list2;
+	list2 = list;
+	list2.print();
+
+	cout << endl;
+	ForwardList list3;
+	list3 = list + list;
+	list3.print();
 }
