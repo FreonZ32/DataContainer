@@ -16,6 +16,9 @@ public:
 	Element* get_pNext()const
 	{return pNext;}
 
+	int get_count()const
+	{return count;}
+
 	void set_Data(int Data)
 	{this->Data = Data;}
 
@@ -47,14 +50,30 @@ public:
 		this->Head = nullptr;	//Если голова указывает на 0 = список пуст
 	cout << "Fconstructor:\t" << this << endl;
 	}
-	ForwardList(const ForwardList& ForwardList)
+	ForwardList(const ForwardList& other)
 	{
-		this->Head = new Element(ForwardList.Head->Data);
-		for (Element* Temp = ForwardList.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
+		this->Head = new Element(other.Head->Data);
+		this->Head->count = 1;
+		for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
 		{cout << "FCopyConstructor:\t" << this << endl; }
+	}
+	ForwardList(ForwardList&& other) noexcept
+	{
+		this->Head = other.Head;
+		this->Head->count = other.Head->count;
+		Element* Temp = other.Head; Element* thisTemp = this->Head;
+		while (Temp != nullptr)
+		{
+			thisTemp->pNext = Temp->pNext;
+			thisTemp = thisTemp->pNext;
+			Temp = Temp->pNext;
+		}
+		other.Head = nullptr;
+		{cout << "FMoveConstructor:\t" << this << endl; }
 	}
 	~ForwardList()
 	{
+		if (Head == nullptr)return;
 		for (;Head->count; )
 		{
 			Element* Temp = Head;
@@ -108,7 +127,6 @@ public:
 		Element* New = new Element(Data);
 		New->pNext = Temp->pNext;
 		Temp->pNext = New;
-
 		/*Element* Temp = Head;
 		Element* New = new Element(Data);
 		int i = 0;
@@ -124,7 +142,15 @@ public:
 	}
 	void erase(unsigned int n)
 	{
+		if (n > Head->count-1) { cout << "Выход за пределы списка! " << endl; return; }
+		if (Head == nullptr)return;
+		if (n==0)return pop_front();
 		Element* Temp = Head;
+		for (int i = 0; i < n - 1; i++)Temp = Temp->pNext;
+		Element* New = Temp->pNext;
+		Temp->pNext = Temp->pNext->pNext;
+		delete New;
+		/*Element* Temp = Head;
 		int i = 0;
 		for (; Temp->pNext != nullptr; Temp = Temp->pNext, i++);
 		if (i == 0) { cout << "Массив и так из 1ого элемента!" << endl; }
@@ -135,7 +161,7 @@ public:
 			if (n == 0)pop_front();
 			else if (n == i)pop_back();
 			else { for (; n>1; Temp = Temp->pNext, n--); Element* New = Temp->pNext; Temp->pNext = Temp->pNext->pNext; delete New; }
-		}
+		}*/
 	}
 
 	//OPERATORS
@@ -143,7 +169,8 @@ public:
 	{
 		if (&this->Head == &other.Head)return* this;
 		else 
-		{
+		{	
+			this->Head->count = 0;
 			this->Head = new Element(other.Head->Data);
 			for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
 			{cout << "Foperator=:\t" << this << endl; }
@@ -169,15 +196,17 @@ ForwardList operator+(const ForwardList& left, const ForwardList& right)
 {
 	ForwardList buffer(left);
 	Element* Temp = buffer.get_Head();
+	cout << Temp->get_count() << endl;
 	for (; Temp->get_pNext() != nullptr; Temp = Temp->get_pNext());
 	Element* Temp2 = right.get_Head();
 	for (; Temp2!= nullptr; Temp2 = Temp2->get_pNext(),Temp = Temp->get_pNext())
 	{Temp->set_pNext(new Element(Temp2->get_Data()));}
+	cout << Temp->get_count() << endl;
 	return buffer;
 }
 
-#define WORK_WITH_ELEMENTS_CHECK
-//#define CONSTRUCTORSandOPERATORS
+//#define WORK_WITH_ELEMENTS_CHECK
+#define CONSTRUCTORSandOPERATORS
 
 void main()
 {
@@ -221,7 +250,6 @@ void main()
 	cout << endl;
 	ForwardList list1(list);
 	list1.print();
-
 	cout << endl;
 	ForwardList list2;
 	list2 = list;
