@@ -42,58 +42,54 @@ int Element::count = 0;
 class ForwardList
 {
 	Element* Head;	//Указывает на начальный элемент списка
+	size_t size;
 public:
 	Element* get_Head()const
 	{return Head;}
+
+	unsigned int get_size()const
+	{return size;}
+
+	void set_size(unsigned int size)
+	{this->size = size;}
+
 	ForwardList()
 	{
+		this->size = 0;
+		this->Head->count = 0;
 		this->Head = nullptr;	//Если голова указывает на 0 = список пуст
 	cout << "Fconstructor:\t" << this << endl;
 	}
+	ForwardList(const std::initializer_list<int>& il) :ForwardList()
+	{
+		for (const int*it = il.begin(); it !=il.end() ; it++)
+		{push_back(*it);}
+	}
 	ForwardList(const ForwardList& other)
 	{
-		this->Head = new Element(other.Head->Data);
-		this->Head->count = 1;
-		for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
+		for (Element* Temp = other.Head; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
 		{cout << "FCopyConstructor:\t" << this << endl; }
 	}
 	ForwardList(ForwardList&& other) noexcept
 	{
-		this->Head = other.Head;
-		this->Head->count = other.Head->count;
-		Element* Temp = other.Head; Element* thisTemp = this->Head;
-		while (Temp != nullptr)
-		{
-			thisTemp->pNext = Temp->pNext;
-			thisTemp = thisTemp->pNext;
-			Temp = Temp->pNext;
-		}
-		//other.Head->count = 0;		//WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
+		*this = std::move(other);
 		other.Head = nullptr;
+		other.size = 0;
 		{cout << "FMoveConstructor:\t" << this << endl; }
 	}
+
 	~ForwardList()
 	{
-		if (Head == nullptr)return;
-		Element* Temp = this->Head;
-		int i=0;
-		while (Temp != nullptr) { i++; Temp = Temp->pNext; }
-		cout << i << endl;
-		while (i--)
-		{
-			Element* Temp = Head;
-			Head = Head->pNext;
-			delete Temp;
-		}
+		cout << size << endl;
+		while (Head)pop_front();
 		cout << "FDestructor:\t" << this << endl;
 	}
 
 	//ADDING ELEMENTS
 	void push_front(int Data)
 	{
-		Element* New = new Element(Data);
-		New->pNext = Head;
-		Head = New;
+		Head = new Element(Data, Head);
+		size++;
 	}
 	void push_back(int Data)
 	{
@@ -101,16 +97,14 @@ public:
 		Element* Temp = Head; 
 		for (; Temp->pNext != nullptr; Temp = Temp->pNext);
 		Temp->pNext = new Element(Data);
+		size++;
 	}
 	void pop_front()
 	{
 		Element* Temp = Head;
-		if (Temp->pNext == nullptr)cout << "Нельзя удалить единственный элемент массива!" << endl;
-		else 
-		{
-			Head = Head->pNext;
-			delete Temp;
-		}
+		Head = Head->pNext;
+		delete Temp;
+		size--;
 	}
 	void pop_back()
 	{
@@ -122,6 +116,7 @@ public:
 			delete Temp->pNext;
 			Temp->pNext = nullptr;
 		}
+		size--;
 	}
 	void insert(int Data, unsigned int n)
 	{
@@ -129,9 +124,8 @@ public:
 		if (n == 0 || Head == nullptr)return push_front(Data);
 		Element* Temp = Head;
 		for (int i = 0; i < n - 1; i++)Temp = Temp->pNext;
-		Element* New = new Element(Data);
-		New->pNext = Temp->pNext;
-		Temp->pNext = New;
+		Temp->pNext = new Element(Data, Temp->pNext);
+		size++;
 		/*Element* Temp = Head;
 		Element* New = new Element(Data);
 		int i = 0;
@@ -155,6 +149,7 @@ public:
 		Element* New = Temp->pNext;
 		Temp->pNext = Temp->pNext->pNext;
 		delete New;
+		size--;
 		/*Element* Temp = Head;
 		int i = 0;
 		for (; Temp->pNext != nullptr; Temp = Temp->pNext, i++);
@@ -172,28 +167,18 @@ public:
 	//OPERATORS
 	ForwardList& operator=(const ForwardList& other)
 	{
-		if (&this->Head == &other.Head)return* this;
-		else 
-		{	
-			this->Head->count = 0;
-			this->Head = new Element(other.Head->Data);
-			for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
-			cout << "Foperator=:\t" << this << endl;
-			return *this;
-		}
+		while (Head)pop_front();
+		if (this == &other)return* this;
+		for (Element* Temp = other.Head; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
+		cout << "Foperator=:\t" << this << endl;
+		return *this;
 	}
 	ForwardList& operator=(ForwardList&& other) noexcept
 	{
+		this->size = other.size;
 		this->Head = other.Head;
-		this->Head->count = other.Head->count;
-		Element* Temp = other.Head; Element* thisTemp = this->Head;
-		while (Temp != nullptr)
-		{
-			thisTemp->pNext = Temp->pNext;
-			thisTemp = thisTemp->pNext;
-			Temp = Temp->pNext;
-		}
 		other.Head = nullptr;
+		other.size = 0;
 		{cout << "FMoveOperatort= :\t" << this << endl; }
 		return *this;
 	}
@@ -201,14 +186,9 @@ public:
 	//METHODS
 	void print()const
 	{
-		//cout << "Head:\t" << Head << endl;
-		Element* Temp = Head;	//temp - итератор
-		while (Temp != nullptr)
-		{
+		for (Element* Temp = Head; Temp; Temp = Temp->pNext)
 			cout << Temp << "\t" << Temp->Data << "\t" << Temp->pNext << endl;
-			Temp = Temp->pNext;	//Переход на следующий элемент
-		}
-		cout << "Количество элементов списка: " << Head->count << endl;
+		cout << "Количество элементов списка: " << size << endl;
 	}
 };
 
@@ -220,11 +200,12 @@ ForwardList operator+(const ForwardList& left, const ForwardList& right)
 	Element* Temp2 = right.get_Head();
 	for (; Temp2!= nullptr; Temp2 = Temp2->get_pNext(),Temp = Temp->get_pNext())
 	{Temp->set_pNext(new Element(Temp2->get_Data()));}
+	buffer.set_size(left.get_size() + right.get_size());
 	return buffer;
 }
 
 //#define WORK_WITH_ELEMENTS_CHECK
-#define CONSTRUCTORSandOPERATORS
+//#define CONSTRUCTORSandOPERATORS
 
 void main()
 {
@@ -283,5 +264,14 @@ void main()
 	cout << list3.get_Head() << endl;
 
 #endif // CONSTRUCTORSandOPERATORS
+
+	/*int arr[] = { 3,5,8,13,21 };
+	for (int i = 0; i < sizeof(arr)/sizeof(int); i++)
+	{
+		cout << arr[i] << "\t";
+	}*/
+
+	ForwardList list = { 3,5,8,13,21 };
+	list.print();
 
 }
