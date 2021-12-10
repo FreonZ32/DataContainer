@@ -31,7 +31,7 @@ public:
 	}
 	~Element()
 	{
-		count--;
+		this->count--;
 		cout << "EDestructor:\t" << this << endl;
 	}
 	friend class ForwardList;
@@ -68,6 +68,7 @@ public:
 			thisTemp = thisTemp->pNext;
 			Temp = Temp->pNext;
 		}
+		other.Head->count = 0;
 		other.Head = nullptr;
 		{cout << "FMoveConstructor:\t" << this << endl; }
 	}
@@ -165,15 +166,15 @@ public:
 	}
 
 	//OPERATORS
-	ForwardList& operator=(const ForwardList& other)
+	ForwardList operator=(const ForwardList& other)
 	{
 		if (&this->Head == &other.Head)return* this;
 		else 
 		{	
 			this->Head->count = 0;
 			this->Head = new Element(other.Head->Data);
-			for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
-			{cout << "Foperator=:\t" << this << endl; }
+			for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext,cout << this->Head->count << endl);
+			cout << "Foperator=:\t" << this << endl;
 			return *this;
 		}
 	}
@@ -188,7 +189,7 @@ public:
 			cout << Temp << "\t" << Temp->Data << "\t" << Temp->pNext << endl;
 			Temp = Temp->pNext;	//Переход на следующий элемент
 		}
-		cout << "Колличество элементов списка: " << Head->count << endl;
+		cout << "Количество элементов списка: " << Head->count << endl;
 	}
 };
 
@@ -258,6 +259,7 @@ void main()
 	cout << endl;
 	ForwardList list3;
 	list3 = list + list;
+	cout << list3.get_Head()->get_count() << endl;
 	list3.print();
 #endif // CONSTRUCTORSandOPERATORS
 
