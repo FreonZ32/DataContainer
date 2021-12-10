@@ -78,8 +78,8 @@ public:
 		Element* Temp = this->Head;
 		int i=0;
 		while (Temp != nullptr) { i++; Temp = Temp->pNext; }
-		//cout << i << endl;
-		for (;i;i--)
+		cout << i << endl;
+		while (i--)
 		{
 			Element* Temp = Head;
 			Head = Head->pNext;
