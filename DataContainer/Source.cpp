@@ -75,7 +75,11 @@ public:
 	~ForwardList()
 	{
 		if (Head == nullptr)return;
-		for (;Head->count; )
+		Element* Temp = this->Head;
+		int i=0;
+		while (Temp != nullptr) { i++; Temp = Temp->pNext; }
+		//cout << i << endl;
+		for (;i;i--)
 		{
 			Element* Temp = Head;
 			Head = Head->pNext;
@@ -256,14 +260,13 @@ void main()
 #ifdef CONSTRUCTORSandOPERATORS
 	ForwardList list;
 	for (int i = 0; i < 5; i++)
-	{
-		list.push_front(rand() % 100);
-	}
+	{list.push_front(rand() % 100);}
 	list.print();
 
 	cout << endl;
 	ForwardList list1(list);
 	list1.print();
+
 	cout << endl;
 	ForwardList list2;
 	list2 = list;
@@ -273,6 +276,12 @@ void main()
 	ForwardList list3;
 	list3 = list + list;
 	list3.print();
+
+	cout << list.get_Head() << endl;
+	cout << list1.get_Head() << endl;
+	cout << list2.get_Head() << endl;
+	cout << list3.get_Head() << endl;
+
 #endif // CONSTRUCTORSandOPERATORS
 
 }
