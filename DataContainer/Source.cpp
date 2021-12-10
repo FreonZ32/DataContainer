@@ -68,7 +68,7 @@ public:
 			thisTemp = thisTemp->pNext;
 			Temp = Temp->pNext;
 		}
-		other.Head->count = 0;
+		//other.Head->count = 0;		//WHYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
 		other.Head = nullptr;
 		{cout << "FMoveConstructor:\t" << this << endl; }
 	}
@@ -166,17 +166,32 @@ public:
 	}
 
 	//OPERATORS
-	ForwardList operator=(const ForwardList& other)
+	ForwardList& operator=(const ForwardList& other)
 	{
 		if (&this->Head == &other.Head)return* this;
 		else 
 		{	
 			this->Head->count = 0;
 			this->Head = new Element(other.Head->Data);
-			for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext,cout << this->Head->count << endl);
+			for (Element* Temp = other.Head->pNext; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
 			cout << "Foperator=:\t" << this << endl;
 			return *this;
 		}
+	}
+	ForwardList& operator=(ForwardList&& other) noexcept
+	{
+		this->Head = other.Head;
+		this->Head->count = other.Head->count;
+		Element* Temp = other.Head; Element* thisTemp = this->Head;
+		while (Temp != nullptr)
+		{
+			thisTemp->pNext = Temp->pNext;
+			thisTemp = thisTemp->pNext;
+			Temp = Temp->pNext;
+		}
+		other.Head = nullptr;
+		{cout << "FMoveOperatort= :\t" << this << endl; }
+		return *this;
 	}
 
 	//METHODS
@@ -197,12 +212,10 @@ ForwardList operator+(const ForwardList& left, const ForwardList& right)
 {
 	ForwardList buffer(left);
 	Element* Temp = buffer.get_Head();
-	cout << Temp->get_count() << endl;
 	for (; Temp->get_pNext() != nullptr; Temp = Temp->get_pNext());
 	Element* Temp2 = right.get_Head();
 	for (; Temp2!= nullptr; Temp2 = Temp2->get_pNext(),Temp = Temp->get_pNext())
 	{Temp->set_pNext(new Element(Temp2->get_Data()));}
-	cout << Temp->get_count() << endl;
 	return buffer;
 }
 
@@ -259,7 +272,6 @@ void main()
 	cout << endl;
 	ForwardList list3;
 	list3 = list + list;
-	cout << list3.get_Head()->get_count() << endl;
 	list3.print();
 #endif // CONSTRUCTORSandOPERATORS
 
