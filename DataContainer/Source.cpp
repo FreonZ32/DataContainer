@@ -126,18 +126,6 @@ public:
 		for (int i = 0; i < n - 1; i++)Temp = Temp->pNext;
 		Temp->pNext = new Element(Data, Temp->pNext);
 		size++;
-		/*Element* Temp = Head;
-		Element* New = new Element(Data);
-		int i = 0;
-		for (; Temp->pNext != nullptr; Temp = Temp->pNext, i++);
-		if (n > i&&i!=0) { cout << "Место вставки выходит за пределы массива! " << endl; }
-		else
-		{
-			Temp = Head;
-			if (n == 0)push_front(Data);
-			else if (n == i) { for (; Temp->pNext->pNext != nullptr; Temp = Temp->pNext); New->pNext = Temp->pNext;Temp->pNext = New;}
-			else {for (; n>1; Temp = Temp->pNext, n--); New->pNext = Temp->pNext; Temp->pNext = New;}
-		}*/
 	}
 	void erase(unsigned int n)
 	{
@@ -150,18 +138,6 @@ public:
 		Temp->pNext = Temp->pNext->pNext;
 		delete New;
 		size--;
-		/*Element* Temp = Head;
-		int i = 0;
-		for (; Temp->pNext != nullptr; Temp = Temp->pNext, i++);
-		if (i == 0) { cout << "Массив и так из 1ого элемента!" << endl; }
-		else if (n > i) { cout << "Место удаления выходит за пределы массива! " << endl; }
-		else 
-		{
-			Temp = Head;
-			if (n == 0)pop_front();
-			else if (n == i)pop_back();
-			else { for (; n>1; Temp = Temp->pNext, n--); Element* New = Temp->pNext; Temp->pNext = Temp->pNext->pNext; delete New; }
-		}*/
 	}
 
 	//OPERATORS
