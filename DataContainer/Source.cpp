@@ -4,6 +4,8 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+#define DEBUG
+
 class Element
 {
 	int Data;	//Значение элемента
@@ -27,12 +29,18 @@ public:
 	Element(int Data, Element* pNext = nullptr) :Data(Data), pNext(pNext)
 	{
 		count++;
+#ifdef DEBUG
 		cout << "Econstructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 	~Element()
 	{
 		this->count--;
+#ifdef DEBUG
 		cout << "EDestructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 	friend class ForwardList;
 	friend class Iterator;
@@ -48,32 +56,75 @@ public:
 	void set_temp(Element* obj)
 	{this->temp = obj;}
 
-	Iterator(Element* Head=nullptr)
-	{this->temp = Head;}
-	~Iterator(){}
-	Iterator operator++()
+	Iterator(Element* Head = nullptr)
+	{
+		this->temp = Head;
+#ifdef DEBUG
+		cout << "Econstructor:\t" << this << endl;
+#endif // DEBUG
+
+	}
+
+	~Iterator()
+	{
+#ifdef DEBUG
+		cout << "IDeconstructor:\t" << this << endl;
+#endif // DEBUG
+	}
+
+	//OPERATORS
+	Iterator& operator++()
+	{
+		this->temp = temp->pNext;
+		return *this;
+	}
+	Iterator operator++(int)
 	{
 		Element* buf = this->temp;
 		this->temp = temp->pNext;
 		return buf;
 	}
-	Iterator operator++(int)
+	int& operator*()const
 	{
-		this->temp = temp->pNext;
-		return *this;
+		return temp->Data;
 	}
-
+	bool operator==(const Iterator& other)const
+	{
+		return this->temp == other.temp;
+	}
+	bool operator!=(const Iterator& other)const
+	{
+		return this->temp != other.temp;
+	}
+	operator bool()const
+	{
+		return temp;
+	}
 	void print()
 	{
 		cout << this->get_temp() << " " << this->get_temp()->get_Data() << " " << this->get_temp()->get_pNext() << endl;
 	}
 };
 
+//ostream operator<<(ostream& os, const Iterator& obj)
+//{
+//	return os << obj;
+//}
+
 class ForwardList
 {
 	Element* Head;	//Указывает на начальный элемент списка
 	size_t size;
 public:
+	Iterator begin()
+	{
+		return Head;
+	}
+	Iterator end()
+	{
+		return nullptr;
+	}
+
 	Element* get_Head()const
 	{return Head;}
 
@@ -88,31 +139,47 @@ public:
 		this->size = 0;
 		this->Head->count = 0;
 		this->Head = nullptr;	//Если голова указывает на 0 = список пуст
-	cout << "Fconstructor:\t" << this << endl;
+#ifdef DEBUG
+		cout << "Fconstructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 	ForwardList(const std::initializer_list<int>& il) :ForwardList()
 	{
 		for (const int*it = il.begin(); it !=il.end() ; it++)
 		{push_back(*it);}
+#ifdef DEBUG
+		cout << "FListConstructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 	ForwardList(const ForwardList& other)
 	{
 		for (Element* Temp = other.Head; Temp != nullptr; push_back(Temp->Data), Temp = Temp->pNext);
-		{cout << "FCopyConstructor:\t" << this << endl; }
+#ifdef DEBUG
+		cout << "FCopyConstructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 	ForwardList(ForwardList&& other) noexcept
 	{
 		*this = std::move(other);
 		other.Head = nullptr;
 		other.size = 0;
-		{cout << "FMoveConstructor:\t" << this << endl; }
+#ifdef DEBUG
+		cout << "FMoveConstructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 
 	~ForwardList()
 	{
 		cout << size << endl;
 		while (Head)pop_front();
+#ifdef DEBUG
 		cout << "FDestructor:\t" << this << endl;
+#endif // DEBUG
+
 	}
 
 	//ADDING ELEMENTS
@@ -192,26 +259,33 @@ public:
 	//METHODS
 	void print()const
 	{
-		for (Element* Temp = Head; Temp; Temp++)
-			cout << Temp << " " << Temp->Data << " " << Temp->pNext << endl;
-
+		for (Iterator Temp = Head; Temp; Temp++)
+		{
+			cout << *Temp << "\t";
+		}
+		cout << endl;
+		
 		/*for (Iterator Temp(this->Head); Temp.get_temp() != nullptr; ++Temp)
 			Temp.print();*/
 
 		cout << "Количество элементов списка: " << size << endl;
 	}
-	friend class Iterator;
 };
 
 ForwardList operator+(const ForwardList& left, const ForwardList& right)
 {
 	ForwardList buffer(left);
-	for (Element* Temp = right.get_Head(); Temp; buffer.push_back(Temp->get_Data()), Temp = Temp->get_pNext());
+	/*for (Element* Temp = right.get_Head(); Temp; buffer.push_back(Temp->get_Data()), Temp = Temp->get_pNext());*/
+	for (Iterator temp = right.get_Head(); temp; temp++)
+	{
+		buffer.push_back(*temp);
+	}
 	return buffer;
 }
 
 //#define WORK_WITH_ELEMENTS_CHECK
 //#define CONSTRUCTORSandOPERATORS
+//#define RANGE_BASED_FOR_ARR
 
 void main()
 {
@@ -271,13 +345,21 @@ void main()
 
 #endif // CONSTRUCTORSandOPERATORS
 
-	/*int arr[] = { 3,5,8,13,21 };
-	for (int i = 0; i < sizeof(arr)/sizeof(int); i++)
+#ifdef RANGE_BASED_FOR_ARR
+	int arr[] = { 3,5,8,13,21 };
+	for (int i : arr)
 	{
-		cout << arr[i] << "\t";
-	}*/
+		cout << i << "\t";
+	}
+	cout << endl;
+#endif // RANGE_BASED_FOR_ARR
 
 	ForwardList list = { 3,5,8,13,21 };
-	list.print();
+	cout << endl;
+	for(int i : list)
+	{
+		cout << i << "\t";
+	}
+	cout << endl;
 
 }
