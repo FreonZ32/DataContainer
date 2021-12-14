@@ -35,9 +35,39 @@ public:
 		cout << "EDestructor:\t" << this << endl;
 	}
 	friend class ForwardList;
+	friend class Iterator;
 };
-
 int Element::count = 0;
+
+class Iterator 
+{
+	Element* temp;
+public:
+	Element* get_temp()
+	{return temp;}
+	void set_temp(Element* obj)
+	{this->temp = obj;}
+
+	Iterator(Element* Head=nullptr)
+	{this->temp = Head;}
+	~Iterator(){}
+	Iterator operator++()
+	{
+		Element* buf = this->temp;
+		this->temp = temp->pNext;
+		return buf;
+	}
+	Iterator operator++(int)
+	{
+		this->temp = temp->pNext;
+		return *this;
+	}
+
+	void print()
+	{
+		cout << this->get_temp() << " " << this->get_temp()->get_Data() << " " << this->get_temp()->get_pNext() << endl;
+	}
+};
 
 class ForwardList
 {
@@ -162,21 +192,21 @@ public:
 	//METHODS
 	void print()const
 	{
-		for (Element* Temp = Head; Temp; Temp = Temp->pNext)
-			cout << Temp << "\t" << Temp->Data << "\t" << Temp->pNext << endl;
+		for (Element* Temp = Head; Temp; Temp++)
+			cout << Temp << " " << Temp->Data << " " << Temp->pNext << endl;
+
+		/*for (Iterator Temp(this->Head); Temp.get_temp() != nullptr; ++Temp)
+			Temp.print();*/
+
 		cout << "Количество элементов списка: " << size << endl;
 	}
+	friend class Iterator;
 };
 
 ForwardList operator+(const ForwardList& left, const ForwardList& right)
 {
 	ForwardList buffer(left);
-	Element* Temp = buffer.get_Head();
-	for (; Temp->get_pNext() != nullptr; Temp = Temp->get_pNext());
-	Element* Temp2 = right.get_Head();
-	for (; Temp2!= nullptr; Temp2 = Temp2->get_pNext(),Temp = Temp->get_pNext())
-	{Temp->set_pNext(new Element(Temp2->get_Data()));}
-	buffer.set_size(left.get_size() + right.get_size());
+	for (Element* Temp = right.get_Head(); Temp; buffer.push_back(Temp->get_Data()), Temp = Temp->get_pNext());
 	return buffer;
 }
 
