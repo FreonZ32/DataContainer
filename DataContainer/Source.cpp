@@ -4,7 +4,7 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-#define DEBUG
+//#define DEBUG
 
 class Element
 {
@@ -174,7 +174,6 @@ public:
 
 	~ForwardList()
 	{
-		cout << size << endl;
 		while (Head)pop_front();
 #ifdef DEBUG
 		cout << "FDestructor:\t" << this << endl;
@@ -252,7 +251,7 @@ public:
 		this->Head = other.Head;
 		other.Head = nullptr;
 		other.size = 0;
-		{cout << "FMoveOperatort= :\t" << this << endl; }
+		cout << "FMoveOperatort= :\t" << this << endl; 
 		return *this;
 	}
 
