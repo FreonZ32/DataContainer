@@ -151,7 +151,6 @@ public:
 #ifdef DEBUG
 		cout << "FListConstructor:\t" << this << endl;
 #endif // DEBUG
-
 	}
 	ForwardList(const ForwardList& other)
 	{
@@ -159,7 +158,6 @@ public:
 #ifdef DEBUG
 		cout << "FCopyConstructor:\t" << this << endl;
 #endif // DEBUG
-
 	}
 	ForwardList(ForwardList&& other) noexcept
 	{
@@ -174,7 +172,6 @@ public:
 
 	~ForwardList()
 	{
-		cout << size << endl;
 		while (Head)pop_front();
 #ifdef DEBUG
 		cout << "FDestructor:\t" << this << endl;
