@@ -310,6 +310,4 @@ void main()
 	for (ForwardList::ReverseIterator rit = list.rbegin(); rit != list.rend(); ++rit)cout << *rit << "\t";
 	cout << endl;
 #endif // ITERATOR_CHECK
-
-	cout << "ssssss";
 }
