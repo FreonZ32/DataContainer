@@ -43,7 +43,12 @@ public:
 			cout << "MIConstructor:\t" << this << endl;
 #endif // DEBUG
 		}
-		virtual ~Iterators(){}
+		virtual ~Iterators()
+		{
+#ifdef DEBUG
+			cout << "MIDestructor:\t" << this << endl;
+#endif // DEBUG
+		}
 
 		bool operator==(const Iterators& other)const
 		{return this->Temp == other.Temp;}
