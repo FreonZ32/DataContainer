@@ -4,17 +4,18 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-#define DEBUG
+//#define DEBUG
 
+template<typename T>
 class ForwardList
 {
 	class Element
 	{
-		int Data;
+		T Data;
 		Element* pNext;
 		Element* pPref;
 	public:
-		Element(int Data, Element* pNext = nullptr, Element* pPref = nullptr)
+		Element(T Data, Element* pNext = nullptr, Element* pPref = nullptr)
 			:Data(Data), pNext(pNext), pPref(pPref)
 		{
 #ifdef DEBUG
@@ -73,16 +74,17 @@ public:
 		}
 
 		ConstIterator& operator++()
-		{Temp = Temp->pNext;return *this;}
+		{BaseIterator::Temp = BaseIterator::Temp->pNext;return *this;}
 
 		ConstIterator operator++(int)
-		{ConstIterator old = *this;Temp = Temp->pNext;return old;}
+		{ConstIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pNext;return old;}
 
 		ConstIterator& operator--()
-		{Temp = Temp->pPref;return *this;}
+		{
+			BaseIterator::Temp = BaseIterator::Temp->pPref;return *this;}
 
 		ConstIterator operator--(int)
-		{ConstIterator old = *this;Temp = Temp->pPref;return old;}
+		{ConstIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pPref;return old;}
 	};
 	class Iterator :public ConstIterator
 	{
@@ -90,7 +92,7 @@ public:
 		Iterator(Element* Temp) :ConstIterator(Temp){}
 		~Iterator(){}
 		int& operator*()
-		{return Temp->Data;}
+		{return BaseIterator::Temp->Data;}
 	};
 	class ConstReverseIterator :public BaseIterator
 	{
@@ -108,16 +110,18 @@ public:
 #endif // DEBUG
 		}
 		ConstReverseIterator& operator++()
-		{Temp = Temp->pPref;return *this;}
+		{
+			BaseIterator::Temp = BaseIterator::Temp->pPref;return *this;}
 
 		ConstReverseIterator operator++(int)
-		{ConstReverseIterator old = *this; Temp = Temp->pPref; return old;}
+		{ConstReverseIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pPref; return old;}
 
 		ConstReverseIterator& operator--()
-		{Temp = Temp->pNext;return *this;}
+		{
+			BaseIterator::Temp = BaseIterator::Temp->pNext;return *this;}
 
 		ConstReverseIterator operator--(int)
-		{ConstReverseIterator old = *this; Temp = Temp->pNext;return old;}
+		{ConstReverseIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pNext;return old;}
 	};
 	class ReverseIterator :public BaseIterator
 	{
@@ -125,7 +129,7 @@ public:
 		ReverseIterator(Element* Temp) :BaseIterator(Temp){}
 		~ReverseIterator(){}
 		int& operator*()
-		{return Temp->Data;}
+		{return BaseIterator::Temp->Data;}
 	};
 	Iterator begin()
 	{return Head;}
@@ -155,12 +159,12 @@ public:
 		cout << "Fconstructor:\t" << this << endl;
 #endif // DEBUG
 	}
-	ForwardList(const std::initializer_list<int>& il) :ForwardList()
+	ForwardList(const std::initializer_list<T>& il) :ForwardList()
 	{
 		for (int const* it = il.begin(); it != il.end(); it++)
 		{push_back(*it);}
 	}
-	ForwardList(const ForwardList& other) :ForwardList()
+	ForwardList(const ForwardList<T>& other) :ForwardList()
 	{
 		//for (Element* Temp = other.Head; Temp; Temp = Temp->pNext)this->push_back(Temp->Data);
 		*this = other;
@@ -175,7 +179,7 @@ public:
 	}
 
 	//MODIFICATION
-	void push_front(int Data)
+	void push_front(T Data)
 	{
 		if (Head == nullptr && Tail == nullptr)
 		{
@@ -186,7 +190,7 @@ public:
 		Head = Head->pPref = new Element(Data, Head);
 		size++;
 	}
-	void push_back(int Data)
+	void push_back(T Data)
 	{
 		if (Head == nullptr && Tail == nullptr)return push_front(Data);
 		Tail = Tail->pNext = new Element(Data, nullptr, Tail);
@@ -217,7 +221,7 @@ public:
 		size--;
 	}
 
-	void insert(int Data, int Index)
+	void insert(T Data, int Index)
 	{
 		if (Index >= size)
 		{
@@ -278,7 +282,7 @@ public:
 	}
 
 	//OPERATORS
-	ForwardList& operator=(const ForwardList& other)
+	ForwardList<T>& operator=(const ForwardList<T>& other)
 	{
 		if (this == &other)return* this;
 		while (Head)pop_front();
@@ -287,21 +291,19 @@ public:
 	}
 };
 
-void print_list(const ForwardList& list)
+template<typename T>
+void print_list(const ForwardList<T>& list)
 {
-	for (ForwardList::ConstIterator it = list.cbegin(); it != list.cend(); ++it)
-	{
-		cout << *it << "\t";
-	}
+	for (typename ForwardList<T>::ConstIterator it = list.cbegin(); it != list.cend(); ++it)
+	{cout << *it << "\t";}
 	cout << endl;
 }
 
-void reverse_print_list(const ForwardList& list)
+template<typename T>
+void reverse_print_list(const ForwardList<T>& list)
 {
-	for (ForwardList::ConstReverseIterator rit = list.crbegin(); rit != list.crend(); ++rit)
-	{
-		cout << *rit << "\t";
-	}
+	for (typename ForwardList<T>::ConstReverseIterator rit = list.crbegin(); rit != list.crend(); ++rit)
+	{cout << *rit << "\t";}
 	cout << endl;
 }
 
@@ -315,7 +317,7 @@ void main()
 #ifdef MODIFICATE
 	int n;
 	cout << "Введите количество элементов списка: "; cin >> n;
-	ForwardList list;
+	ForwardList<int> list;
 	for (int i = 0; i < n; i++)
 	{
 		list.push_back(rand() % 100);
@@ -348,7 +350,7 @@ void main()
 #endif // MODIFICATE
 
 #ifdef ITERATOR_CHECK
-	ForwardList list = { 3,5,8,13,21 };
+	ForwardList<int> list = { 3,5,8,13,21 };
 	list.print();
 
 	ForwardList list1;
@@ -361,7 +363,7 @@ void main()
 	cout << endl;
 #endif // ITERATOR_CHECK
 
-	ForwardList list = { 3,5,8,13,21 };
+	ForwardList<int> list = { 3,5,8,13,21 };
 	print_list(list);
 	cout << endl;
 	reverse_print_list(list);
