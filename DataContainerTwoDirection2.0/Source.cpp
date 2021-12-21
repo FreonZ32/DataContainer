@@ -308,6 +308,7 @@ void reverse_print_list(const ForwardList& list)
 //#define MODIFICATE
 //#define ITERATOR_CHECK
 
+
 void main()
 {
 	setlocale(LC_ALL, "rus");
