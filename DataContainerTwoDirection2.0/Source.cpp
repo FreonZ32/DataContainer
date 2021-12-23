@@ -15,121 +15,62 @@ class ForwardList
 		Element* pNext;
 		Element* pPref;
 	public:
-		Element(T Data, Element* pNext = nullptr, Element* pPref = nullptr)
-			:Data(Data), pNext(pNext), pPref(pPref)
-		{
-#ifdef DEBUG
-			cout << "Econstructor:\t" << this << endl;
-#endif // DEBUG
-		}
-		~Element()
-		{
-#ifdef DEBUG
-			cout << "EDestructor:\t" << this << endl;
-#endif // DEBUG
-		}
+		Element(T Data, Element* pNext = nullptr, Element* pPref = nullptr);
+		~Element();
+
 		friend class ForwardList;
 	}*Head, * Tail;
 	size_t size;
+
 	class BaseIterator
 	{
 	protected:
 		Element* Temp;
 	public:
-		BaseIterator(Element* Temp) :Temp(Temp)
-		{
-#ifdef DEBUG
-			cout << "IConstructor:\t" << this << endl;
-#endif // DEBUG
-		}
-		~BaseIterator()
-		{
-#ifdef DEBUG
-			cout << "IDestructor:\t" << this << endl;
-#endif // DEBUG
-		}
-		bool operator==(const BaseIterator& other)const
-		{return this->Temp == other.Temp;}
-		bool operator!=(const BaseIterator& other)const
-		{return this->Temp != other.Temp;}
+		BaseIterator(Element* Temp);
+		~BaseIterator();
 
-		const int& operator*()const
-		{return Temp->Data;}
+		bool operator==(const BaseIterator& other)const;
+		bool operator!=(const BaseIterator& other)const;
+
+		const int& operator*()const;
 	};
 public:
 	class ConstIterator :public BaseIterator
 	{
 	public:
-		ConstIterator(Element* Temp) :BaseIterator(Temp)
-		{
-#ifdef DEBUG
-			cout << "IConstructor:\t" << this << endl;
-#endif // DEBUG
-		}
-		~ConstIterator()
-		{
-#ifdef DEBUG
-			cout << "IDestructor:\t" << this << endl;
-#endif // DEBUG
-		}
+		ConstIterator(Element* Temp);
+		~ConstIterator();
 
-		ConstIterator& operator++()
-		{BaseIterator::Temp = BaseIterator::Temp->pNext;return *this;}
-
-		ConstIterator operator++(int)
-		{ConstIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pNext;return old;}
-
-		ConstIterator& operator--()
-		{
-			BaseIterator::Temp = BaseIterator::Temp->pPref;return *this;}
-
-		ConstIterator operator--(int)
-		{ConstIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pPref;return old;}
+		ConstIterator& operator++();
+		ConstIterator operator++(int);
+		ConstIterator& operator--();
+		ConstIterator operator--(int);
 	};
 	class Iterator :public ConstIterator
 	{
 	public:
-		Iterator(Element* Temp) :ConstIterator(Temp){}
-		~Iterator(){}
-		int& operator*()
-		{return BaseIterator::Temp->Data;}
+		Iterator(Element* Temp);
+		~Iterator();
+		int& operator*();
 	};
 	class ConstReverseIterator :public BaseIterator
 	{
 	public:
-		ConstReverseIterator(Element* Temp) :BaseIterator(Temp)
-		{
-#ifdef DEBUG
-			cout << "RIConstructor:\t" << this << endl;
-#endif // DEBUG
-		}
-		~ConstReverseIterator()
-		{
-#ifdef DEBUG
-			cout << "RIDestructor:\t" << this << endl;
-#endif // DEBUG
-		}
-		ConstReverseIterator& operator++()
-		{
-			BaseIterator::Temp = BaseIterator::Temp->pPref;return *this;}
+		ConstReverseIterator(Element* Temp);
+		~ConstReverseIterator();
 
-		ConstReverseIterator operator++(int)
-		{ConstReverseIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pPref; return old;}
-
-		ConstReverseIterator& operator--()
-		{
-			BaseIterator::Temp = BaseIterator::Temp->pNext;return *this;}
-
-		ConstReverseIterator operator--(int)
-		{ConstReverseIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pNext;return old;}
+		ConstReverseIterator& operator++();
+		ConstReverseIterator operator++(int);
+		ConstReverseIterator& operator--();
+		ConstReverseIterator operator--(int);
 	};
 	class ReverseIterator :public BaseIterator
 	{
 	public:
-		ReverseIterator(Element* Temp) :BaseIterator(Temp){}
-		~ReverseIterator(){}
-		int& operator*()
-		{return BaseIterator::Temp->Data;}
+		ReverseIterator(Element* Temp);
+		~ReverseIterator();
+		int& operator*();
 	};
 	Iterator begin();
 	Iterator end();
@@ -166,6 +107,8 @@ public:
 	ForwardList<T>& operator=(const ForwardList<T>& other);
 };
 
+
+//FORWARDLIST
 template<typename T>
 typename ForwardList<T>::Iterator ForwardList<T>::begin()
 {return Head;}
@@ -351,6 +294,154 @@ ForwardList<T>& ForwardList<T>::operator=(const ForwardList<T>& other)
 	while (Head)pop_front();
 	for (Element* Temp = other.Head; Temp; Temp = Temp->pNext)this->push_back(Temp->Data);
 	cout << "FCopyAssignment:\t" << this << endl;
+}
+
+//ELEMENT
+template <typename T>
+ForwardList<T>::Element::Element(T Data, Element* pNext, Element* pPref)
+	:Data(Data), pNext(pNext), pPref(pPref)
+{
+#ifdef DEBUG
+	cout << "Econstructor:\t" << this << endl;
+#endif // DEBUG
+}
+template <typename T>
+ForwardList<T>::Element::~Element()
+{
+#ifdef DEBUG
+	cout << "EDestructor:\t" << this << endl;
+#endif // DEBUG
+}
+
+//BASE ITERATOR
+template <typename T>
+ForwardList<T>::BaseIterator::BaseIterator(Element* Temp) :Temp(Temp)
+{
+#ifdef DEBUG
+	cout << "IConstructor:\t" << this << endl;
+#endif // DEBUG
+}
+template <typename T>
+ForwardList<T>::BaseIterator::~BaseIterator()
+{
+#ifdef DEBUG
+	cout << "IDestructor:\t" << this << endl;
+#endif // DEBUG
+}
+template <typename T>
+bool ForwardList<T>::BaseIterator::operator==(const BaseIterator& other)const
+{
+	return this->Temp == other.Temp;
+}
+template <typename T>
+bool ForwardList<T>::BaseIterator::operator!=(const BaseIterator& other)const
+{
+	return this->Temp != other.Temp;
+}
+
+template <typename T>
+const int& ForwardList<T>::BaseIterator::operator*()const
+{
+	return Temp->Data;
+}
+
+
+//CONST OPERATOR
+template <typename T>
+ForwardList<T>::ConstIterator::ConstIterator(Element* Temp) :BaseIterator(Temp)
+{
+#ifdef DEBUG
+	cout << "IConstructor:\t" << this << endl;
+#endif // DEBUG
+}
+template <typename T>
+ForwardList<T>::ConstIterator::~ConstIterator()
+{
+#ifdef DEBUG
+	cout << "IDestructor:\t" << this << endl;
+#endif // DEBUG
+}
+
+template <typename T>
+typename ForwardList<T>::ConstIterator& ForwardList<T>::ConstIterator::operator++()
+{
+	BaseIterator::Temp = BaseIterator::Temp->pNext; return *this;
+}
+template <typename T>
+typename ForwardList<T>::ConstIterator ForwardList<T>::ConstIterator::operator++(int)
+{
+	ConstIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pNext; return old;
+}
+template <typename T>
+typename ForwardList<T>::ConstIterator& ForwardList<T>::ConstIterator::operator--()
+{
+	BaseIterator::Temp = BaseIterator::Temp->pPref; return *this;
+}
+template <typename T>
+typename ForwardList<T>::ConstIterator ForwardList<T>::ConstIterator::operator--(int)
+{
+	ConstIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pPref; return old;
+}
+
+
+//ITERATOR
+template <typename T>
+ForwardList<T>::Iterator::Iterator(Element* Temp) :ConstIterator(Temp) {}
+template <typename T>
+ForwardList<T>::Iterator::~Iterator() {}
+template <typename T>
+int& ForwardList<T>::Iterator::operator*()
+{
+	return BaseIterator::Temp->Data;
+}
+
+
+//CONSTREVERSITERATOR
+template <typename T>
+ForwardList<T>::ConstReverseIterator::ConstReverseIterator(Element* Temp) :BaseIterator(Temp)
+{
+#ifdef DEBUG
+	cout << "RIConstructor:\t" << this << endl;
+#endif // DEBUG
+}
+template <typename T>
+ForwardList<T>::ConstReverseIterator::~ConstReverseIterator()
+{
+#ifdef DEBUG
+	cout << "RIDestructor:\t" << this << endl;
+#endif // DEBUG
+}
+template <typename T>
+typename ForwardList<T>::ConstReverseIterator& ForwardList<T>::ConstReverseIterator::operator++()
+{
+	BaseIterator::Temp = BaseIterator::Temp->pPref; return *this;
+}
+template <typename T>
+typename ForwardList<T>::ConstReverseIterator ForwardList<T>::ConstReverseIterator::operator++(int)
+{
+	ConstReverseIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pPref; return old;
+}
+template <typename T>
+typename ForwardList<T>::ConstReverseIterator& ForwardList<T>::ConstReverseIterator::operator--()
+{
+	BaseIterator::Temp = BaseIterator::Temp->pNext; return *this;
+}
+template <typename T>
+typename ForwardList<T>::ConstReverseIterator ForwardList<T>::ConstReverseIterator::operator--(int)
+{
+	ConstReverseIterator old = *this; BaseIterator::Temp = BaseIterator::Temp->pNext; return old;
+}
+
+
+//REVERCEITERATOR
+template <typename T>
+ForwardList<T>::ReverseIterator::ReverseIterator(Element* Temp) :BaseIterator(Temp) {}
+template <typename T>
+ForwardList<T>::ReverseIterator::~ReverseIterator() {}
+template <typename T>
+int& ForwardList<T>::ReverseIterator::operator*()
+{
+	return BaseIterator::Temp->Data;
 }
 
 template<typename T>
