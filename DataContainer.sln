@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataContainerTwoDirection",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataContainerTwoDirection2.0", "DataContainerTwoDirection2.0\DataContainerTwoDirection2.0.vcxproj", "{1E4B3C83-6E10-4CFC-AD3F-C1B17B0E1AFE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BinaryTreeP", "BinaryTreeP\BinaryTreeP.vcxproj", "{7C263A06-D63B-4772-A548-0B6C9302845B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{1E4B3C83-6E10-4CFC-AD3F-C1B17B0E1AFE}.Release|x64.Build.0 = Release|x64
 		{1E4B3C83-6E10-4CFC-AD3F-C1B17B0E1AFE}.Release|x86.ActiveCfg = Release|Win32
 		{1E4B3C83-6E10-4CFC-AD3F-C1B17B0E1AFE}.Release|x86.Build.0 = Release|Win32
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Debug|x64.ActiveCfg = Debug|x64
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Debug|x64.Build.0 = Debug|x64
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Debug|x86.ActiveCfg = Debug|Win32
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Debug|x86.Build.0 = Debug|Win32
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Release|x64.ActiveCfg = Release|x64
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Release|x64.Build.0 = Release|x64
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Release|x86.ActiveCfg = Release|Win32
+		{7C263A06-D63B-4772-A548-0B6C9302845B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
