@@ -45,11 +45,11 @@ public:
 		Sum = 0;
 		cout << "Tconstructor:\t" << this << endl;
 	}
-	/*Tree(const Tree& other) :Tree()
+	Tree(const Tree& other) :Tree()
 	{
 		*this = other;
 		cout << "ЕCopyConstructor:\t" << this << endl;
-	}*/
+	}
 	Tree(Tree&& other) noexcept
 	{
 		this->Root = other.Root;
@@ -99,12 +99,13 @@ public:
 		Root->pRight = CopyTree(Root->pRight);
 		return Root;
 	}
-	/*Tree& operator=(const Tree& other)
+	Tree& operator=(const Tree& other)
 	{
 		if (this == &other)return*this;
-		
+		this->Clean();
+		CopyTree(other.Root);
 		cout << "FCopyAssignment:\t" << this << endl;
-	}*/
+	}
 
 private:
 	void insert(int Data, Element* Root)
@@ -175,7 +176,12 @@ void main()
 	cout << "Количество элементов в дереве: " << tree.getCount() << endl;
 	cout << "Сумма элементов: " << tree.getSum() << endl;
 	cout << "Среднее арифметическое: " << tree.Avg() << endl;
-	/*Tree tree2;
+	cout << endl;
+	Tree tree2;
 	tree2 = tree;
-	tree2.print();*/
+	tree2.print();
+	cout << endl;
+	Tree tree3(tree);
+	tree3.print();
+
 }
