@@ -73,6 +73,7 @@ public:
 	void print()const
 	{
 		print(this->Root);
+		cout << endl;
 	}
 	void Clean()
 	{
@@ -93,6 +94,7 @@ public:
 	void erase(int Data)
 	{
 	  erase(this->Root, Data);
+	  Count--;
 	}
 	
 	Element* CopyTree(Element* Root)
@@ -225,6 +227,7 @@ void main()
 	cout << "Какой элемент удалить? "; cin >> data;
 	tree.erase(data);
 	tree.print();
+	cout << "Количество элементов в дереве: " << tree.getCount() << endl;
 	/*Tree tree2;
 	tree2 = tree;
 	tree2.print();
