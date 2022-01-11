@@ -90,6 +90,10 @@ public:
 	{
 		return double(Sum) / double(Count);
 	}
+	void erase(int Data)
+	{
+	  erase(this->Root, Data);
+	}
 	
 	Element* CopyTree(Element* Root)
 	{
@@ -155,6 +159,46 @@ private:
 	{
 		return Root;
 	}
+	Element* erase(Element* Root, int Data)
+	{
+		if (Root == nullptr)return Root;
+		if (Data == Root->Data)
+		{
+			Element* tmp;
+			if (Root->pRight == nullptr)
+				tmp = Root->pLeft;
+			else 
+			{
+				Element* ptr = Root->pRight;
+				if (ptr->pLeft == nullptr)
+				{
+					ptr->pLeft = Root->pLeft;
+					tmp = ptr;
+				}
+				else
+				{
+					Element* pmin = ptr->pLeft;
+					while (pmin->pLeft != nullptr)
+					{
+						ptr = pmin;
+						pmin = ptr->pLeft;
+					}
+					ptr->pLeft = pmin->pRight;
+					pmin->pLeft = Root->pLeft;
+					pmin->pRight = Root->pRight;
+					tmp = pmin;
+				}
+			}
+			if (this->Root == Root) { delete Root; this->Root = tmp; }
+			else delete Root;
+			return tmp;
+		}
+		else if (Data < Root->Data)
+			Root->pLeft = erase(Root->pLeft, Data);
+		else
+			Root->pRight = erase(Root->pRight, Data);
+		return Root;
+	}
 };
 
 
@@ -177,11 +221,15 @@ void main()
 	cout << "Сумма элементов: " << tree.getSum() << endl;
 	cout << "Среднее арифметическое: " << tree.Avg() << endl;
 	cout << endl;
-	Tree tree2;
+	int data;
+	cout << "Какой элемент удалить? "; cin >> data;
+	tree.erase(data);
+	tree.print();
+	/*Tree tree2;
 	tree2 = tree;
 	tree2.print();
 	cout << endl;
 	Tree tree3(tree);
-	tree3.print();
+	tree3.print();*/
 
 }
