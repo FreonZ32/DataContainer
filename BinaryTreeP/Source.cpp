@@ -4,6 +4,8 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+//#define DEBUG
+
 class Tree
 {
 protected:
@@ -16,11 +18,15 @@ protected:
 		Element(int Data, Element* pLeft = nullptr, Element* pRight = nullptr)
 			:Data(Data), pLeft(pLeft), pRight(pRight)
 		{
+#ifdef DEBUG
 			cout << "Econstructor:\t" << this << endl;
+#endif // DEBUG
 		}
 		~Element()
 		{
+#ifdef DEBUG
 			cout << "EDestructor:\t" << this << endl;
+#endif // DEBUG
 		}
 		bool is_leaf()const
 		{
@@ -49,12 +55,16 @@ public:
 		Root = nullptr;
 		Count = 0;
 		Sum = 0;
+#ifdef DEBUG
 		cout << "Tconstructor:\t" << this << endl;
+#endif // DEBUG
 	}
 	Tree(const Tree& other) :Tree()
 	{
 		*this = other;
+#ifdef DEBUG
 		cout << "ЕCopyConstructor:\t" << this << endl;
+#endif // DEBUG
 	}
 	Tree(Tree&& other) noexcept
 	{
@@ -64,16 +74,23 @@ public:
 		other.Root = nullptr;
 		other.Count = 0;
 		other.Sum = 0;
+#ifdef DEBUG
 		cout << "MoveConstructor:\t" << this << endl;
+#endif // DEBUG
 	}
 	Tree(const std::initializer_list<int>& il) :Tree()
 	{
 		for (int i : il)insert(i, Root);
+#ifdef DEBUG
+		cout << "LISTConstructor:\t" << this << endl;
+#endif // DEBUG
 	}
 	~Tree()
 	{
 		Clean();
+#ifdef DEBUG
 		cout << "Tdestructor:\t" << this << endl;
+#endif // DEBUG
 	}
 	void insert(int Data)
 	{
@@ -83,6 +100,23 @@ public:
 	{
 		print(this->Root);
 		cout << endl;
+	}
+	void print2()const
+	{
+		print2(this->Root, 0);
+		cout << endl;
+	}
+	int depth()const
+	{
+		return depth(this->Root);
+	}
+	void print3(int depth)const
+	{
+		print3(this->Root, depth);
+	}
+	void tree_print()
+	{
+		return tree_print(0);
 	}
 	void Clean()
 	{
@@ -142,7 +176,7 @@ public:
 private:
 	void insert(int Data, Element* Root)
 	{
-		cout << Data << endl;
+		//cout << Data << endl;
 		if (this->Root == nullptr) { this->Root = new Element(Data); Count++; Sum += Data; }
 		if (Root == nullptr)return;
 		if (Data < Root->Data) 
@@ -162,6 +196,44 @@ private:
 		print(Root->pLeft);
 		cout << Root->Data << "\t";
 		print(Root->pRight);
+	}
+	void print2(Element* Root, int l)const
+	{
+		int i;
+		if (Root != NULL)
+		{
+			print2(Root->pLeft, l + 3);
+			for (i = 1; i <= l; i++)cout << " ";
+			cout << Root->Data;
+			if (l == 0)cout << "------------------";
+			cout << endl;
+			print2(Root->pRight, l + 3);
+		}
+	}
+	int depth(Element* Root)const
+	{
+		if (Root == nullptr) return 0;
+		else return
+			depth(Root->pLeft) + 1 > depth(Root->pRight) + 1 ?
+			depth(Root->pLeft) + 1 : depth(Root->pRight) + 1;
+	}
+	void print3(Element* Root, int depth)const
+	{
+		if (Root == nullptr||depth ==-1)return;
+		if (depth == 1 && Root->pLeft == nullptr)cout << " " << "\t";
+		print3(Root->pLeft, depth - 1);
+		if (depth == 0)cout << Root->Data << "\t";
+		if (depth == 1 && Root->pRight == nullptr)cout << " " << "\t";
+		print3(Root->pRight, depth - 1);
+	}
+	void tree_print(int depth)
+	{
+		if (depth == this->depth())return;
+		for (int i = 0; i < this->depth() - depth; i++)cout << "\t";
+		print3(depth);
+		for (int i = 0; i < this->depth() - depth; i++)cout << "\t";
+		cout << endl;
+		tree_print(depth + 1);
 	}
 	int minValue(Element* Root)const
 	{
@@ -261,9 +333,6 @@ private:
 	}
 	int Count2(Element* Root)const
 	{
-		/*if (Root == nullptr)return 0;
-		return Count2(Root->pLeft) + Count2(Root->pRight) + 1;*/
-		//return Root ? Count2(Root->pLeft) + Count2(Root->pRight) + 1 : 0;
 		return !Root ? 0 : Count2(Root->pLeft) + Count2(Root->pRight) + 1;
 	}
 	int Sum2(Element* Root)const
@@ -316,7 +385,7 @@ void main()
 		treeU.insert(rand() % 100);
 	}
 	cout << "Не уникальное: \t";
-	tree.print();
+	tree.print2();
 	cout << "Минимальное значение в дереве: " << tree.minValue() << endl;
 	cout << "Максимальное значение в дереве: " << tree.maxValue() << endl;
 	cout << "Количество элементов в дереве: " << tree.getCount() << endl;
@@ -331,13 +400,22 @@ void main()
 	cout << endl;
 #endif // BASECHECK
 
-	Tree tree3 = { 50,25,75,16,32,64,80,8,11,48,77,85 };
-	tree3.print();
-	int data;
+	/*int n;
+	cout << "Введите количество элементов: "; cin >> n;
+	Tree tree;
+	for (int i = 0; i < n; i++)
+	{
+		tree.insert(rand() % 100);
+	}*/
+	Tree tree3 = { 50,25,75,16,32,29,64,80,8,18,48,77,85 };
+	cout << "Глубина дерева: " << tree3.depth() << endl;
+	tree3.print2();
+	tree3.tree_print();
+	/*int data;
 	cout << "Какой элемент удалить? "; cin >> data;
 	tree3.erase2(data);
 	tree3.print();
-	cout << "Количество элементов в дереве: " << tree3.getCount() << endl;
+	cout << "Количество элементов в дереве: " << tree3.getCount() << endl;*/
 	/*Tree tree2;
 	tree2 = tree;
 	tree2.print();
