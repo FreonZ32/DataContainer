@@ -1,4 +1,8 @@
 #include<iostream>
+#include<Windows.h>
+#include <vector>
+#include <cmath>
+#include <numeric>
 using namespace std;
 using std::cin;
 using std::cout;
@@ -96,9 +100,14 @@ public:
 	{
 		insert(Data, this->Root);
 	}
-	void print()const
+	void print(int depth, int interval)const
 	{
-		print(this->Root);
+		print(this->Root, depth, interval);
+		cout << endl;
+	}
+	void printS()const
+	{
+		printS(this->Root);
 		cout << endl;
 	}
 	void print2()const
@@ -110,10 +119,10 @@ public:
 	{
 		return depth(this->Root);
 	}
-	void print3(int depth)const
+	/*void print3(int depth)const
 	{
 		print3(this->Root, depth);
-	}
+	}*/
 	void tree_print()
 	{
 		return tree_print(0);
@@ -173,6 +182,29 @@ public:
 	{
 		return Sum2(Root);
 	}
+	void tree_balanse()
+	{
+		vector<int> tree;
+		filling(this->Root, tree);
+
+	}
+	void tree_balanse(vector<int> tree, int beg, int end)
+	{
+		int Sred = ceil((double)(accumulate(tree[beg], tree[end], 0)) / (end-beg));
+		int result = abs(Sred - tree[0]);
+		int item = 0;
+		for (int i = 0; i < tree.size(); i++)
+		{
+			if (abs(Sred - tree[i]) < result)
+			{
+				result = abs(Sred - tree[i]);
+				item = i;
+			}
+		}
+		tree_balanse(tree, beg, item);
+		tree.push_back(item);
+		cout << "Ближайшее" << item << endl;
+	}
 private:
 	void insert(int Data, Element* Root)
 	{
@@ -190,12 +222,19 @@ private:
 			else insert(Data, Root->pRight);
 		}
 	}
-	void print(Element* Root)const
+	void filling(Element* Root,vector<int>& tree)
 	{
 		if (Root == nullptr)return;
-		print(Root->pLeft);
+		filling(Root->pLeft,tree);
+		tree.push_back(Root->Data);
+		filling(Root->pRight,tree);
+	}
+	void printS(Element* Root)const
+	{
+		if (Root == nullptr)return;
+		printS(Root->pLeft);
 		cout << Root->Data << "\t";
-		print(Root->pRight);
+		printS(Root->pRight);
 	}
 	void print2(Element* Root, int l)const
 	{
@@ -217,24 +256,87 @@ private:
 			depth(Root->pLeft) + 1 > depth(Root->pRight) + 1 ?
 			depth(Root->pLeft) + 1 : depth(Root->pRight) + 1;
 	}
-	void print3(Element* Root, int depth)const
+	void print(Element* Root, int depth, int interval)const
 	{
-		if (Root == nullptr||depth ==-1)return;
-		if (depth == 1 && Root->pLeft == nullptr)cout << " " << "\t";
-		print3(Root->pLeft, depth - 1);
-		if (depth == 0)cout << Root->Data << "\t";
-		if (depth == 1 && Root->pRight == nullptr)cout << " " << "\t";
-		print3(Root->pRight, depth - 1);
+		if (Root == nullptr || depth == -1)return;
+		//if (depth == 1 && Root->pLeft == nullptr)cout << "  " << tab;
+		//if (depth == 1 && Root->pRight == nullptr)cout << "  " << tab;
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		static CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+		if (depth == 1 && Root->pLeft == nullptr)
+		{
+			csbi.dwCursorPosition.X += interval;
+			SetConsoleCursorPosition(hConsole, csbi.dwCursorPosition);
+		}
+		print(Root->pLeft, depth - 1, interval);
+		//cout << tab;
+		//static int cursor_x = csbi.dwCursorPosition.X;
+		//static int cursor_y = csbi.dwCursorPosition.Y;
+		if (depth == 0)
+		{
+			cout << Root->Data /*<< tab*/;
+			csbi.dwCursorPosition.X += interval;
+			SetConsoleCursorPosition(hConsole, csbi.dwCursorPosition);
+		}
+		//for (int i = 0; i < (this->depth() - depth)*1; i++)cout << tab;
+		int min_distance = 4;
+		//cout.width(min_distance*(this->depth() - depth));
+		//if (depth == 1 && Root->pRight == nullptr)cout << "  " << tab;
+		//for (int i = 0; i < (this->depth() - depth)*1; i++)cout << tab;
+		if (depth == 1 && Root->pRight == nullptr)
+		{
+			csbi.dwCursorPosition.X += interval;
+			SetConsoleCursorPosition(hConsole, csbi.dwCursorPosition);
+		}
+		print(Root->pRight, depth - 1, interval);
+		//cout << tab;
 	}
 	void tree_print(int depth)
 	{
 		if (depth == this->depth())return;
-		for (int i = 0; i < this->depth() - depth; i++)cout << "\t";
-		print3(depth);
-		for (int i = 0; i < this->depth() - depth; i++)cout << "\t";
-		cout << endl;
+		int min_distance = 8;
+		//cout.width(min_distance*(this->depth() - depth));
+		//for (int i = 0; i < (this->depth() - depth) * (this->depth() - depth); i++)	cout << tab;
+
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(hConsole, &csbi);
+		static int start_x = csbi.dwMaximumWindowSize.X / 2;
+		static int start_y = csbi.dwCursorPosition.Y;
+		static COORD position = { start_x, start_y };
+		SetConsoleCursorPosition(hConsole, position);
+		static int interval = start_x * 2;
+		print(depth, interval);
+		//for (int i = 0; i < (this->depth() - depth) * (this->depth() - depth); i++)	cout << tab;
+		//cout << endl;
+		position.X /= 2;
+		position.Y += 5;
+		interval /= 2;
 		tree_print(depth + 1);
 	}
+	//void print3(Element* Root, int depth)const
+	//{
+	//	if (Root == nullptr||depth ==-1)return;
+	//	if (depth == 1 && Root->pLeft == nullptr)cout << " " << "\t";
+	//	print3(Root->pLeft, depth - 1);
+	//	cout << "\t";
+	//	if (depth == 0)cout << Root->Data /*<< "\t"*/;
+	//	for (int i = 0; i < this->depth() - depth; i++)cout << "\t";
+	//	if (depth == 1 && Root->pRight == nullptr)cout << " " << "\t";
+	//	print3(Root->pRight, depth - 1);
+	//}
+	//void tree_print(int depth)
+	//{
+	//	if (depth == this->depth())return;
+	//	int min_distance = 8;
+	//	cout.width(min_distance * (this->depth() - depth));
+	//	/*for (int i = 0; i < this->depth() - depth; i++)cout << "\t";*/
+	//	print3(depth);
+	//	/*for (int i = 0; i < this->depth() - depth; i++)cout << "\t";*/
+	//	cout << endl;
+	//	tree_print(depth + 1);
+	//}
 	int minValue(Element* Root)const
 	{
 		/*if (Root->pLeft == nullptr){ return Root->Data; }
@@ -402,15 +504,15 @@ void main()
 
 	/*int n;
 	cout << "Введите количество элементов: "; cin >> n;
-	Tree tree;
+	Tree tree3;
 	for (int i = 0; i < n; i++)
 	{
-		tree.insert(rand() % 100);
+		tree3.insert(rand() % 100);
 	}*/
 	Tree tree3 = { 50,25,75,16,32,29,64,80,8,18,48,77,85 };
-	cout << "Глубина дерева: " << tree3.depth() << endl;
-	tree3.print2();
-	tree3.tree_print();
+	/*cout << "Глубина дерева: " << tree3.depth() << endl;
+	tree3.print2();*/
+	//tree3.tree_print();
 	/*int data;
 	cout << "Какой элемент удалить? "; cin >> data;
 	tree3.erase2(data);
@@ -422,5 +524,9 @@ void main()
 	cout << endl;
 	Tree tree3(tree);
 	tree3.print();*/
+	tree3.printS();
+	tree3.print2();
+	//tree3.tree_print();
+	tree3.tree_balanse();
 
 }
