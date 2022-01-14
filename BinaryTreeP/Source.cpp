@@ -187,10 +187,16 @@ public:
 		vector<int> tree;
 		filling(this->Root, tree);
 
+		tree_balanse(tree, 0, tree.size());
 	}
 	void tree_balanse(vector<int> tree, int beg, int end)
 	{
-		int Sred = ceil((double)(accumulate(tree[beg], tree[end], 0)) / (end-beg));
+		if (beg == end)return;
+		if (end != tree.size()) { end--; }
+		int k = end - beg;
+		int Sred = 0;
+		for (int i = beg; i < end; i++)Sred += tree[i];
+		Sred /= k;
 		int result = abs(Sred - tree[0]);
 		int item = 0;
 		for (int i = 0; i < tree.size(); i++)
@@ -202,8 +208,8 @@ public:
 			}
 		}
 		tree_balanse(tree, beg, item);
-		tree.push_back(item);
-		cout << "Ближайшее" << item << endl;
+		cout << item << endl;
+		//cout << "Ближайшее" << item << endl;
 	}
 private:
 	void insert(int Data, Element* Root)
@@ -525,7 +531,7 @@ void main()
 	Tree tree3(tree);
 	tree3.print();*/
 	tree3.printS();
-	tree3.print2();
+	//tree3.print2();
 	//tree3.tree_print();
 	tree3.tree_balanse();
 
